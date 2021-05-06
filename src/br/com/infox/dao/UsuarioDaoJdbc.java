@@ -132,11 +132,11 @@ class UsuarioDaoJdbc implements UsuarioDao {
         ResultSet rs = null;
         int editado = 0;
 
-        String alterar = "update tbusuarios set usuario =?, telefone=?, login=?, senha=?, perfil=? where iduser=?";
+        String editar = "update tbusuarios set usuario =?, telefone=?, login=?, senha=?, perfil=? where iduser=?";
         try {
             if (isValido(u)) {
 
-                pst = conexao.prepareStatement(alterar);
+                pst = conexao.prepareStatement(editar);
                 pst.setString(1, u.getNome());
                 pst.setString(2, u.getFone());
                 pst.setString(3, u.getLogin());

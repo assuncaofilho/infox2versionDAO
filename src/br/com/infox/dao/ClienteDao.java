@@ -15,7 +15,7 @@ public interface ClienteDao {
 
     int editar(Cliente c);
 
-    int remover(int id_cliente); 
+    int remover(Cliente c); 
 
     List<Cliente> listar();
 

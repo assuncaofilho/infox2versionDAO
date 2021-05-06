@@ -367,7 +367,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Selecione um usuário para ser removido!");
+            JOptionPane.showMessageDialog(null, "Selecione um usuário para ser removido!");
         }
     }//GEN-LAST:event_btnUsuDeleteActionPerformed
 

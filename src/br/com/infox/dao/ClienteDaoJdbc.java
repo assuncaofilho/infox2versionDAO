@@ -6,6 +6,7 @@ import br.com.infox.entity.Cliente;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,12 +110,60 @@ class ClienteDaoJdbc implements ClienteDao {
 
     @Override
     public int editar(Cliente c) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        int editado = 0;
+
+        String editar = "update tbclientes set nomecli =?, endcli=?, telefonecli=?, emailcli=? where idcli=?";
+        try {
+            if (isValido(c)) {
+
+                pst = conexao.prepareStatement(editar);
+                pst.setString(1, c.getNome());
+                pst.setString(2, c.getEnd());
+                pst.setString(3, c.getFone());
+                pst.setString(4, c.getEmail());
+                pst.setString(5, Integer.toString(c.getId()));
+
+                int verificador = pst.executeUpdate();
+                if (verificador > 0) { // se a execução for exitosa de uma DML (insert, upedate, delete or drop)
+                    editado = verificador;
+
+                }
+                return editado;
+
+            } else {
+                throw new DadosInvalidosException("Preencha todos os campos obrigatórios para editar este cliente!");
+            }
+        } catch (SQLException e) {
+            throw new AcessoAoBancoException("Falha ao editar o cliente. Verifique a comunicação com o Banco de Dados.");
+        }
+
     }
 
     @Override
-    public int remover(int id_cliente) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int remover(Cliente c) {
+        
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        
+  
+        try {
+            if(isValido(c)){
+            String remover = "delete from tbclientes where idcli=?";
+            pst = conexao.prepareStatement(remover);
+            pst.setString(1, Integer.toString(c.getId()));
+            int verificador = pst.executeUpdate(); // retorna 1 para DML (insert, update, delete, drop);
+            return verificador;
+                
+            }
+                throw new DadosInvalidosException("Não altere os dados do usuário a ser removido! Faça a busca novamente");
+                
+            
+        } catch (Exception e) {
+            throw new FalhaNaOperacaoException("Falha ao remover o usuário" + e.getMessage());
+        
+        }
     }
 
     @Override
