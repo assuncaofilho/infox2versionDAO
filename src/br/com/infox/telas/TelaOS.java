@@ -7,6 +7,9 @@ package br.com.infox.telas;
 
 import java.sql.*;
 import br.com.infox.connection.ConexaoUtil;
+import br.com.infox.dao.DaoFactory;
+import br.com.infox.dao.OsDao;
+import br.com.infox.entity.Os;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
@@ -77,7 +80,7 @@ public class TelaOS extends javax.swing.JInternalFrame {
         }
         return validation;
     }
-    
+   /* 
     private void emitirOS(){
         String emitirOS = "insert into tbos(tipo, situacao, equipamento, defeito, servico, tecnico, valor, idcli) values(?,?,?,?,?,?,?,?)";
         try {
@@ -107,7 +110,7 @@ public class TelaOS extends javax.swing.JInternalFrame {
         }
             
     }
-    
+    */
     private void pesquisarOS(){
         String num_OS = JOptionPane.showInputDialog("Número da OS");
         String pesqOS = "select * from tbos where os = ?";
@@ -146,6 +149,7 @@ public class TelaOS extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, "OS não encontrada");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, e);
         }
     }
@@ -452,7 +456,7 @@ public class TelaOS extends javax.swing.JInternalFrame {
 
         jLabel8.setText("*Defeito");
 
-        jLabel9.setText("Serviço");
+        jLabel9.setText("*Serviço");
 
         jLabel10.setText("Técnico");
 
@@ -639,7 +643,30 @@ public class TelaOS extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void btnOSCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOSCadastrarActionPerformed
-        emitirOS();
+        if(!txtOSCliID.getText().isEmpty()){
+        OsDao osDao = DaoFactory.createOsDao();
+        
+        if(radBtnOSOrc.isSelected()){
+            tipo = "Orçamento";
+        }else{
+            tipo = "OS";
+        }
+        
+        Os add = new Os(tipo, cboOSStatus.getSelectedItem().toString(), txtOSEquip.getText(),txtOSDef.getText(),txtOSServ.getText(),txtOSTecn.getText(),Double.parseDouble(txtOSValor.getText().replace(",", ".")), Integer.parseInt(txtOSCliID.getText()));
+
+        try {
+            Os o = osDao.cadastrar(add);
+            if (o != null) {
+                
+                JOptionPane.showMessageDialog(null, "OS cadastrada com sucesso");
+
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+      }else{
+            JOptionPane.showMessageDialog(null, "Selecione um cliente para vincular à OS!"); // o método isValido() deveria lancar um exceção pra ser mostrada aqui mas não consegui.
+        }  
     }//GEN-LAST:event_btnOSCadastrarActionPerformed
 
     private void btnOSBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOSBuscarActionPerformed

@@ -5,7 +5,10 @@
  */
 package br.com.infox.dao;
 
+import br.com.infox.connection.ConexaoUtil;
 import br.com.infox.entity.Os;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
@@ -13,32 +16,70 @@ import java.sql.ResultSet;
  * @author usuario
  */
 class OsDaoJdbc implements OsDao {
-
-
-
-    @Override
-    public Os pesquisarOs(int id_os) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void editarOs(Os o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void removerOs(Os o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void imprimirOs(Os o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public ResultSet cadastrarOs(Os o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    private Connection conexao = ConexaoUtil.getConnection();
+    
+    private boolean isValido(Os o){
+        return(!(Integer.toString(o.getId_cliente()).isEmpty()) &&!o.getEquipamento().isEmpty() && !o.getDefeito().isEmpty() && !o.getServico().isEmpty() && !(Double.toString(o.getValor()).isEmpty()));
     }
     
+    @Override
+    public Os cadastrar(Os o) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+
+        String cadastrar = "insert into tbos (os, data_os, tipo, situacao, equipamento, defeito, servico, tecnico, valor, idcli) "
+                + "values (default, default, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try {
+            if (isValido(o)) {
+                pst = conexao.prepareStatement(cadastrar);
+
+                pst.setString(1, o.getTipo());
+                pst.setString(2, o.getSituacao());
+                pst.setString(3, o.getEquipamento());
+                pst.setString(4, o.getDefeito());
+                pst.setString(5, o.getServico());
+                pst.setString(6, o.getTecnico());
+                pst.setString(7, Double.toString(o.getValor()).replace(",", "."));
+                pst.setString(8, Integer.toString(o.getId_cliente()));
+
+                pst.executeUpdate(); 
+                
+                return o;
+            } else {
+                throw new DadosInvalidosException("Não foi possível cadastrar esta OS ou orçamento. \n Verifique os campos obrigatórios.");
+            }
+
+        } catch (java.sql.SQLException e1) {
+            e1.printStackTrace();
+            throw new AcessoAoBancoException("erro de acesso ao Banco de Dados. Favor verifique a comunicação com o servidor.");
+        } catch (Exception e2) {
+            throw new RuntimeException(e2);
+        }
+    }
+
+    @Override
+    public Os pesquisar(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int editar(Os o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int remover(Os o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void imprimir(Os o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+
+  
 }

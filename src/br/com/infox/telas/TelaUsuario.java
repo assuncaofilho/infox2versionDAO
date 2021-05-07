@@ -28,19 +28,9 @@ import br.com.infox.telas.TelaPrincipal;
  * @author usuario
  */
 public class TelaUsuario extends javax.swing.JInternalFrame {
-    
-    Connection conexao = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    
-    
-
-    /**
-     * Creates new form TelaUsuario
-     */
+        
     public TelaUsuario() {
         initComponents();
-        conexao = ConexaoUtil.getConnection();
         
     }
     

@@ -24,16 +24,10 @@ import net.proteanit.sql.DbUtils;
  */
 public class TelaCliente extends javax.swing.JInternalFrame {
 
-    Connection conexao = null;
-    PreparedStatement pst = null;
 
-    /**
-     * Creates new form TelaCliente
-     */
     public TelaCliente() {
 
         initComponents();
-        conexao = ConexaoUtil.getConnection();
         tblClientes.setModel(new DefaultTableModel());
 
     }

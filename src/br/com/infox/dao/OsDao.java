@@ -5,14 +5,26 @@ import java.sql.ResultSet;
 
 public interface OsDao {
 
-    ResultSet cadastrarOs(Os o);
+    Os cadastrar(Os o); // Retorna a OS cadastrada;
 
-    Os pesquisarOs(int id_os);
+    Os pesquisar(int id);
 
-    void editarOs(Os o);
+    int editar(Os o);
 
-    void removerOs(Os o);
+    int remover(Os o);
 
-    void imprimirOs(Os o);
+    void imprimir(Os o);
 
 }
+/*
+    int cadastrar(Cliente c); // RETORNA O ID DO CLIENTE CADASTRADO
+    
+    List<Cliente> pesquisar(String p);
+    
+    Cliente pesquisarById(int id);
+
+    int editar(Cliente c);
+
+    int remover(Cliente c); 
+
+    List<Cliente> listar();*/

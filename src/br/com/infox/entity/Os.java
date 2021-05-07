@@ -14,6 +14,36 @@ public class Os {
     private double valor;
     private int id_cliente;
 
+    public Os(int id_os, String data_os, String tipo, String situacao, String equipamento, String defeito, String servico, String tecnico, double valor, int id_cliente) {
+        this.id_os = id_os;
+        this.data_os = data_os;
+        this.tipo = tipo;
+        this.situacao = situacao;
+        this.equipamento = equipamento;
+        this.defeito = defeito;
+        this.servico = servico;
+        this.tecnico = tecnico;
+        this.valor = valor;
+        this.id_cliente = id_cliente;
+    }
+
+    public Os(String tipo, String situacao, String equipamento, String defeito, String servico, String tecnico, double valor, int id_cliente) {
+        this.tipo = tipo;
+        this.situacao = situacao;
+        this.equipamento = equipamento;
+        this.defeito = defeito;
+        this.servico = servico;
+        this.tecnico = tecnico;
+        this.valor = valor;
+        this.id_cliente = id_cliente;
+    }
+
+    @Override
+    public String toString() {
+        return "Os{" + "id_os=" + id_os + ", data_os=" + data_os + ", tipo=" + tipo + ", situacao=" + situacao + ", equipamento=" + equipamento + ", defeito=" + defeito + ", servico=" + servico + ", tecnico=" + tecnico + ", valor=" + valor + ", id_cliente=" + id_cliente + '}';
+    }
+    
+
     public int getId_os() {
         return id_os;
     }
