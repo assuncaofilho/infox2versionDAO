@@ -41,7 +41,7 @@ class OsDaoJdbc implements OsDao {
                 pst.setString(4, o.getDefeito());
                 pst.setString(5, o.getServico());
                 pst.setString(6, o.getTecnico());
-                pst.setString(7, Double.toString(o.getValor()).replace(",", "."));
+                pst.setString(7, Double.toString(o.getValor()));
                 pst.setString(8, Integer.toString(o.getId_cliente()));
 
                 pst.executeUpdate(); 
@@ -61,7 +61,27 @@ class OsDaoJdbc implements OsDao {
 
     @Override
     public Os pesquisar(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        
+        Os encontrada = null;
+        
+        String pesquisar = "select * from tbos where os=?";
+        
+        try {
+            pst = conexao.prepareStatement(pesquisar);
+            pst.setString(1, Integer.toString(id));
+            rs = pst.executeQuery();
+            if(rs.next()){
+                Os o = new Os(rs.getInt("os"), rs.getString("data_os"), rs.getString("tipo"),rs.getString("situacao"), rs.getString("equipamento"), rs.getString("defeito"),rs.getString("servico"), rs.getString("tecnico"), rs.getDouble("valor"), rs.getInt("idcli"));
+                encontrada = o;
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return encontrada;
     }
 
     @Override

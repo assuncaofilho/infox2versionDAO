@@ -7,11 +7,15 @@ package br.com.infox.telas;
 
 import java.sql.*;
 import br.com.infox.connection.ConexaoUtil;
+import br.com.infox.dao.ClienteDao;
 import br.com.infox.dao.DaoFactory;
 import br.com.infox.dao.OsDao;
+import br.com.infox.entity.Cliente;
 import br.com.infox.entity.Os;
 import java.util.HashMap;
+import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import net.proteanit.sql.DbUtils;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -37,7 +41,7 @@ public class TelaOS extends javax.swing.JInternalFrame {
         conexao = ConexaoUtil.getConnection();
     }
     
-    private void pesquisar_cliente(){
+   /* private void pesquisar_cliente(){
         String pesquisar = "select idcli as Id, nomecli as Nome, telefonecli as Fone from tbclientes where nomecli like ?";
         try {
             pst = conexao.prepareStatement(pesquisar);
@@ -54,7 +58,7 @@ public class TelaOS extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, e);
         }
         
-    }
+    }*/
     
     private void clean() {
         txtOSCliID.setText(null);
@@ -124,7 +128,6 @@ public class TelaOS extends javax.swing.JInternalFrame {
                 txtOSId.setText(rs.getString(1));
                 txtOSData.setText(rs.getString(2));
                 if(rs.getString(3).equals("Orçamento")){
-                    // não executa nada pois o radio button orçamento já vem marcado na abertura do frame.
                     tipo = "Orçamento";
                 }else if(rs.getString(3).equals("OS")){
                     radBtnOSOrdemServ.setSelected(true);
@@ -618,8 +621,25 @@ public class TelaOS extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtOSearchNomeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtOSearchNomeKeyReleased
-        // TODO add your handling code here:
-        pesquisar_cliente();
+
+        ClienteDao clienteDao = DaoFactory.createClienteDao();
+        try {
+            List<Cliente> list = clienteDao.pesquisar(txtOSearchNome.getText());
+            String[] columnNames = {"ID", "NOME", "EMAIL", "TELEFONE"};
+            DefaultTableModel model = new DefaultTableModel();
+            tblOSCli.setModel(model);
+            model.setColumnIdentifiers(columnNames);
+            for (Cliente c : list) {
+                Object[] ob = new Object[4];
+                ob[0] = c.getId();
+                ob[1] = c.getNome();
+                ob[2] = c.getEmail();
+                ob[3] = c.getFone();
+                model.addRow(ob);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
     }//GEN-LAST:event_txtOSearchNomeKeyReleased
 
     private void tblOSCliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblOSCliMouseClicked
@@ -670,7 +690,55 @@ public class TelaOS extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnOSCadastrarActionPerformed
 
     private void btnOSBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOSBuscarActionPerformed
-        pesquisarOS();
+        String id = JOptionPane.showInputDialog("Informe nº da OS");
+        OsDao osDao = DaoFactory.createOsDao();
+        try {
+            Os encontrada = osDao.pesquisar(Integer.parseInt(id));
+
+            if (encontrada != null) {
+                txtOSId.setText(Integer.toString(encontrada.getId_os()));
+                txtOSData.setText(encontrada.getData_os());
+                if (encontrada.getTipo().equals("Orçamento")) {
+                    tipo = "Orçamento";
+                    radBtnOSOrc.setSelected(true);
+                } else if (encontrada.getTipo().equals("OS")) {
+                    radBtnOSOrdemServ.setSelected(true);
+                    tipo = "OS";
+                }
+                cboOSStatus.setSelectedItem(encontrada.getSituacao());
+                txtOSEquip.setText(encontrada.getEquipamento());
+                txtOSDef.setText(encontrada.getDefeito());
+                txtOSServ.setText(encontrada.getServico());
+                txtOSTecn.setText(encontrada.getTecnico());
+                txtOSValor.setText(Double.toString(encontrada.getValor()).replace(".", ","));
+                txtOSCliID.setText(Integer.toString(encontrada.getId_cliente()));
+                // prevenindo problemas
+                btnOSCadastrar.setEnabled(false);
+                txtOSearchNome.setEnabled(false);
+                //tblOSCli.setVisible(false);
+                String[] columnNames = {"NOME", "EMAIL", "TELEFONE"};
+                DefaultTableModel model = new DefaultTableModel();
+                tblOSCli.setModel(model);
+                model.setColumnIdentifiers(columnNames);
+
+                ClienteDao clienteDao = DaoFactory.createClienteDao();
+                Cliente vinculadoOS = clienteDao.pesquisarById(encontrada.getId_cliente());
+
+                Object[] ob = new Object[3];
+                ob[0] = vinculadoOS.getNome();
+                ob[1] = vinculadoOS.getEmail();
+                ob[2] = vinculadoOS.getFone();
+
+                model.addRow(ob);
+
+            } else {
+                JOptionPane.showMessageDialog(null, "OS não encontrada");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e); // CORRIGIR POIS NÃO ESTÁ CAPTURANDO A EXCEÇÃO FORMATO INVALIDO 
+            //DE DADOS EXCEPTION
+        }
     }//GEN-LAST:event_btnOSBuscarActionPerformed
 
     private void btnOSAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOSAlterarActionPerformed
