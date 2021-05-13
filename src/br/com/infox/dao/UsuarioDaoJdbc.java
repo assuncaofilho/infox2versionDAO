@@ -190,7 +190,7 @@ class UsuarioDaoJdbc implements UsuarioDao {
     public void imprimirRelatorioClientes() {
         try {
                 
-                 JasperPrint print = JasperFillManager.fillReport("C:/reports/Clientes.jasper",null, conexao );
+                 JasperPrint print = JasperFillManager.fillReport("Clientes.jasper",null, conexao );
                  JasperViewer.viewReport(print, false);
                 
             } catch (Exception e) {
@@ -202,7 +202,7 @@ class UsuarioDaoJdbc implements UsuarioDao {
     public void imprimirRelatorioServicos() {
         try {
                 
-                 JasperPrint print = JasperFillManager.fillReport("C:/reports/Servicos.jasper",null, conexao );
+                 JasperPrint print = JasperFillManager.fillReport("Servicos.jasper",null, conexao );
                  JasperViewer.viewReport(print, false);
                 
             } catch (Exception e) {

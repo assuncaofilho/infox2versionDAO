@@ -17,6 +17,5 @@ public interface ClienteDao {
 
     int remover(Cliente c); 
 
-    List<Cliente> listar();
 
 }

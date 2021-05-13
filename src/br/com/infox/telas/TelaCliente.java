@@ -5,18 +5,12 @@
  */
 package br.com.infox.telas;
 
-import br.com.infox.connection.ConexaoUtil;
 import br.com.infox.dao.ClienteDao;
 import br.com.infox.dao.DaoFactory;
 import br.com.infox.entity.Cliente;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import net.proteanit.sql.DbUtils;
 
 /**
  *

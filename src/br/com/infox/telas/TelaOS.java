@@ -12,14 +12,9 @@ import br.com.infox.dao.DaoFactory;
 import br.com.infox.dao.OsDao;
 import br.com.infox.entity.Cliente;
 import br.com.infox.entity.Os;
-import java.util.HashMap;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import net.proteanit.sql.DbUtils;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -41,26 +36,11 @@ public class TelaOS extends javax.swing.JInternalFrame {
         conexao = ConexaoUtil.getConnection();
     }
     
-   /* private void pesquisar_cliente(){
-        String pesquisar = "select idcli as Id, nomecli as Nome, telefonecli as Fone from tbclientes where nomecli like ?";
-        try {
-            pst = conexao.prepareStatement(pesquisar);
-            pst.setString(1, txtOSearchNome.getText() + "%");
-            rs = pst.executeQuery();
-            
-            if(rs.next()){
-                tblOSCli.setModel(DbUtils.resultSetToTableModel(rs));
-            }else{
-                //JOptionPane.showMessageDialog(null, "não foi possível realizar a busca. Procure o suporte técnico." );
-            }
-            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-        }
-        
-    }*/
-    
     private void clean() {
+        cboOSStatus.setSelectedIndex(0);
+        radBtnOSOrc.setSelected(true);
+        txtOSId.setText(null);
+        txtOSData.setText(null);
         txtOSCliID.setText(null);
         txtOSEquip.setText(null);
         txtOSDef.setText(null);
@@ -75,181 +55,6 @@ public class TelaOS extends javax.swing.JInternalFrame {
         txtOSCliID.setText(tblOSCli.getValueAt(setar, 0).toString());
     }
     
-    private int validation() {
-        int validation;
-        if (txtOSCliID.getText().isEmpty() || txtOSEquip.getText().isEmpty() || txtOSDef.getText().isEmpty()) {
-            validation = 0;
-        } else {
-            validation = 1;
-        }
-        return validation;
-    }
-   /* 
-    private void emitirOS(){
-        String emitirOS = "insert into tbos(tipo, situacao, equipamento, defeito, servico, tecnico, valor, idcli) values(?,?,?,?,?,?,?,?)";
-        try {
-            pst = conexao.prepareStatement(emitirOS);
-            pst.setString(1, tipo);
-            pst.setString(2, cboOSStatus.getSelectedItem().toString());
-            pst.setString(3, txtOSEquip.getText());
-            pst.setString(4, txtOSDef.getText());
-            pst.setString(5, txtOSServ.getText());
-            pst.setString(6, txtOSTecn.getText());
-            pst.setString(7, txtOSValor.getText().replace(",", ".")); // convertendo a vírgula pelo ponto para a execução no BD.
-            pst.setString(8, txtOSCliID.getText());
-            
-            if(validation() == 1){
-            pst.executeUpdate();
-            JOptionPane.showMessageDialog(null, "OS emitida com sucesso");
-            
-            clean();
-            
-           
-            }else{
-                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios.");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            e.printStackTrace();
-        }
-            
-    }
-    */
-    private void pesquisarOS(){
-        String num_OS = JOptionPane.showInputDialog("Número da OS");
-        String pesqOS = "select * from tbos where os = ?";
-        
-        try {
-            pst = conexao.prepareStatement(pesqOS);
-            pst.setString(1, num_OS);
-            rs = pst.executeQuery();
-            
-            if(rs.next()){
-                txtOSId.setText(rs.getString(1));
-                txtOSData.setText(rs.getString(2));
-                if(rs.getString(3).equals("Orçamento")){
-                    tipo = "Orçamento";
-                }else if(rs.getString(3).equals("OS")){
-                    radBtnOSOrdemServ.setSelected(true);
-                    tipo = "OS";
-                }
-                cboOSStatus.setSelectedItem(rs.getString(4));
-                txtOSEquip.setText(rs.getString(5));
-                txtOSDef.setText(rs.getString(6));
-                txtOSServ.setText(rs.getString(7));
-                txtOSTecn.setText(rs.getString(8));
-                txtOSValor.setText(rs.getString(9));
-                txtOSCliID.setText(rs.getString(10));
-                // prevenindo problemas
-                btnOSCadastrar.setEnabled(false);
-                txtOSearchNome.setEnabled(false);
-                tblOSCli.setVisible(false);
-                
-                
-                
-                
-            }else{
-                JOptionPane.showMessageDialog(null, "OS não encontrada");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, e);
-        }
-    }
-    
-    private void alterarOS() {
-        String alterarOS = "update tbos set tipo=?, situacao=?, equipamento=?,defeito=?, servico=?, tecnico=?,valor=? where os=?";
-        try {
-            pst = conexao.prepareStatement(alterarOS);
-            pst.setString(1, tipo);
-            pst.setString(2, cboOSStatus.getSelectedItem().toString());
-            pst.setString(3, txtOSEquip.getText());
-            pst.setString(4, txtOSDef.getText());
-            pst.setString(5, txtOSServ.getText());
-            pst.setString(6, txtOSTecn.getText());
-            pst.setString(7, txtOSValor.getText().replace(",", ".")); // convertendo a vírgula pelo ponto para a execução no BD.
-            pst.setString(8, txtOSId.getText());
-            
-            if(validation() == 1){
-            pst.executeUpdate();
-            JOptionPane.showMessageDialog(null, "OS alterada com sucesso");
-            
-            clean();
-            txtOSId.setText(null);
-            txtOSData.setText(null);
-            
-            btnOSCadastrar.setEnabled(true);
-            txtOSearchNome.setEnabled(true);
-            tblOSCli.setVisible(true);
-            
-            
-           
-            }else{
-                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios.");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            e.printStackTrace();
-        }
-    }
-
-    private void excluirOS() {
-
-        String excluirOS = "delete from tbos where os =?";
-
-        try {
-            pst = conexao.prepareStatement(excluirOS);
-            pst.setString(1, txtOSId.getText());
-            if (!(txtOSId.getText().isEmpty())) {
-                int confirma = JOptionPane.showConfirmDialog(null, "quer mesmo excluir esta Ordem de Serviço?", "Atenção", JOptionPane.YES_NO_OPTION);
-                if (confirma == JOptionPane.YES_OPTION) {
-                    int exclusao = pst.executeUpdate();
-                    if (exclusao > 0) {
-                        JOptionPane.showMessageDialog(null, "OS exluída com sucesso.");
-                        clean();
-                        txtOSId.setText(null);
-                        txtOSData.setText(null);
-                        btnOSCadastrar.setEnabled(false);
-                        txtOSearchNome.setEnabled(false);
-                        tblOSCli.setVisible(false);
-
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Não foi possível excluir esta OS");
-                    }
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "Nunhuma OS selecionada para excluir!");
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-        }
-
-    }
-    
-    private void imprimirOS(){
-         
-        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão desta OS?", "Atenção", JOptionPane.YES_NO_OPTION );
-        
-        if(confirma == JOptionPane.YES_OPTION){
-            // imprimindo a OS com o JaperReport
-            try {
-                // usando a classe HashMap para criar um filtro 
-                HashMap filtro = new HashMap();
-                filtro.put("os",Integer.parseInt(txtOSId.getText())); // "os" é o parâmetro criado no report OS; 
-                JasperPrint print = JasperFillManager.fillReport("C:/reports/OS.jasper",filtro, conexao ); // filtro é o parâmetro obtido para gerar o relatório;
-                JasperViewer.viewReport(print, false);
-                
-            } catch(java.lang.NumberFormatException n){
-                JOptionPane.showMessageDialog(null, "formato inválido. Selecione uma OS válida para impressão");
-            } catch(Exception e){
-                JOptionPane.showMessageDialog(null, e);
-            }
-             
-        }
-    }
-
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -663,90 +468,134 @@ public class TelaOS extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void btnOSCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOSCadastrarActionPerformed
-        if(!txtOSCliID.getText().isEmpty()){
-        OsDao osDao = DaoFactory.createOsDao();
-        
-        if(radBtnOSOrc.isSelected()){
-            tipo = "Orçamento";
-        }else{
-            tipo = "OS";
-        }
-        
-        Os add = new Os(tipo, cboOSStatus.getSelectedItem().toString(), txtOSEquip.getText(),txtOSDef.getText(),txtOSServ.getText(),txtOSTecn.getText(),Double.parseDouble(txtOSValor.getText().replace(",", ".")), Integer.parseInt(txtOSCliID.getText()));
-
-        try {
-            Os o = osDao.cadastrar(add);
-            if (o != null) {
-                
-                JOptionPane.showMessageDialog(null, "OS cadastrada com sucesso");
-
+        if (!txtOSCliID.getText().isEmpty()) {
+            OsDao osDao = DaoFactory.createOsDao();
+            if (radBtnOSOrc.isSelected()) {
+                tipo = "Orçamento";
+            } else {
+                tipo = "OS";
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-        }
-      }else{
+            Os add = new Os(tipo, cboOSStatus.getSelectedItem().toString(), txtOSEquip.getText(), txtOSDef.getText(), txtOSServ.getText(), txtOSTecn.getText(), Double.parseDouble(txtOSValor.getText().replace(",", ".")), Integer.parseInt(txtOSCliID.getText()));
+            try {
+                Os o = osDao.cadastrar(add);
+                if (o != null) {
+                    JOptionPane.showMessageDialog(null, "OS cadastrada com sucesso");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        } else {
             JOptionPane.showMessageDialog(null, "Selecione um cliente para vincular à OS!"); // o método isValido() deveria lancar um exceção pra ser mostrada aqui mas não consegui.
-        }  
+        }                                                                                   // por isso optei por fazer a verificação na própria tela;
     }//GEN-LAST:event_btnOSCadastrarActionPerformed
+
 
     private void btnOSBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOSBuscarActionPerformed
         String id = JOptionPane.showInputDialog("Informe nº da OS");
-        OsDao osDao = DaoFactory.createOsDao();
-        try {
-            Os encontrada = osDao.pesquisar(Integer.parseInt(id));
+        
+            OsDao osDao = DaoFactory.createOsDao();
+            try {
+                Os encontrada = osDao.pesquisar(Integer.parseInt(id));
 
-            if (encontrada != null) {
-                txtOSId.setText(Integer.toString(encontrada.getId_os()));
-                txtOSData.setText(encontrada.getData_os());
-                if (encontrada.getTipo().equals("Orçamento")) {
-                    tipo = "Orçamento";
-                    radBtnOSOrc.setSelected(true);
-                } else if (encontrada.getTipo().equals("OS")) {
-                    radBtnOSOrdemServ.setSelected(true);
-                    tipo = "OS";
+                if (encontrada != null) {
+                    txtOSId.setText(Integer.toString(encontrada.getId_os()));
+                    txtOSData.setText(encontrada.getData_os());
+                    if (encontrada.getTipo().equals("Orçamento")) {
+                        tipo = "Orçamento";
+                        radBtnOSOrc.setSelected(true);
+                    } else if (encontrada.getTipo().equals("OS")) {
+                        radBtnOSOrdemServ.setSelected(true);
+                        tipo = "OS";
+                    }
+                    cboOSStatus.setSelectedItem(encontrada.getSituacao());
+                    txtOSEquip.setText(encontrada.getEquipamento());
+                    txtOSDef.setText(encontrada.getDefeito());
+                    txtOSServ.setText(encontrada.getServico());
+                    txtOSTecn.setText(encontrada.getTecnico());
+                    txtOSValor.setText(Double.toString(encontrada.getValor()).replace(".", ","));
+                    txtOSCliID.setText(Integer.toString(encontrada.getId_cliente()));
+                    // prevenindo problemas
+                    btnOSCadastrar.setEnabled(false);
+                    txtOSearchNome.setEnabled(false);
+                    
+                    String[] columnNames = {"NOME", "EMAIL", "TELEFONE"};
+                    DefaultTableModel model = new DefaultTableModel();
+                    tblOSCli.setModel(model);
+                    model.setColumnIdentifiers(columnNames);
+                    
+                    //Preenchendo a tabela com os dados do cliente associado à OS encontrada;
+                    ClienteDao clienteDao = DaoFactory.createClienteDao();
+                    Cliente vinculadoOS = clienteDao.pesquisarById(encontrada.getId_cliente());
+
+                    Object[] ob = new Object[3];
+                    ob[0] = vinculadoOS.getNome();
+                    ob[1] = vinculadoOS.getEmail();
+                    ob[2] = vinculadoOS.getFone();
+
+                    model.addRow(ob);
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "OS não encontrada");
                 }
-                cboOSStatus.setSelectedItem(encontrada.getSituacao());
-                txtOSEquip.setText(encontrada.getEquipamento());
-                txtOSDef.setText(encontrada.getDefeito());
-                txtOSServ.setText(encontrada.getServico());
-                txtOSTecn.setText(encontrada.getTecnico());
-                txtOSValor.setText(Double.toString(encontrada.getValor()).replace(".", ","));
-                txtOSCliID.setText(Integer.toString(encontrada.getId_cliente()));
-                // prevenindo problemas
-                btnOSCadastrar.setEnabled(false);
-                txtOSearchNome.setEnabled(false);
-                //tblOSCli.setVisible(false);
-                String[] columnNames = {"NOME", "EMAIL", "TELEFONE"};
-                DefaultTableModel model = new DefaultTableModel();
-                tblOSCli.setModel(model);
-                model.setColumnIdentifiers(columnNames);
-
-                ClienteDao clienteDao = DaoFactory.createClienteDao();
-                Cliente vinculadoOS = clienteDao.pesquisarById(encontrada.getId_cliente());
-
-                Object[] ob = new Object[3];
-                ob[0] = vinculadoOS.getNome();
-                ob[1] = vinculadoOS.getEmail();
-                ob[2] = vinculadoOS.getFone();
-
-                model.addRow(ob);
-
-            } else {
-                JOptionPane.showMessageDialog(null, "OS não encontrada");
+                
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e); // PQ NÃO ESTÁ PEGANDO O FORMATOINVALIDODEDADOSEXCEPTION()?
             }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e); // CORRIGIR POIS NÃO ESTÁ CAPTURANDO A EXCEÇÃO FORMATO INVALIDO 
-            //DE DADOS EXCEPTION
-        }
+  
     }//GEN-LAST:event_btnOSBuscarActionPerformed
-
+    
     private void btnOSAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOSAlterarActionPerformed
-        alterarOS();
+        OsDao osDao = DaoFactory.createOsDao();
+
+        if (radBtnOSOrc.isSelected()) {
+            tipo = "Orçamento";
+        } else {
+            tipo = "OS";
+        }
+
+        Os atualizada = new Os(Integer.parseInt(txtOSId.getText()),txtOSData.getText(),tipo, cboOSStatus.getSelectedItem().toString(), txtOSEquip.getText(), txtOSDef.getText(), txtOSServ.getText(), txtOSTecn.getText(), Double.parseDouble(txtOSValor.getText().replace(",", ".")), Integer.parseInt(txtOSCliID.getText()));
+
+        try {
+            int editado = osDao.editar(atualizada);
+            if (editado > 0) {
+                
+                JOptionPane.showMessageDialog(null, "OS alterada com sucesso");
+
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+
     }//GEN-LAST:event_btnOSAlterarActionPerformed
 
     private void btnOSDeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOSDeletarActionPerformed
-        excluirOS();
+        OsDao osDao = DaoFactory.createOsDao();
+        if (!txtOSId.getText().isEmpty()) {
+            Os to_delete = new Os(Integer.parseInt(txtOSId.getText()),txtOSData.getText(),tipo, cboOSStatus.getSelectedItem().toString(), txtOSEquip.getText(), txtOSDef.getText(), txtOSServ.getText(), txtOSTecn.getText(), Double.parseDouble(txtOSValor.getText().replace(",", ".")), Integer.parseInt(txtOSCliID.getText()));
+            int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover esta OS ?", "Atenção", JOptionPane.YES_NO_OPTION);
+            if (confirma == JOptionPane.YES_OPTION) {
+                try {
+                    int verificador = osDao.remover(to_delete);
+                    if (verificador > 0) {
+                        JOptionPane.showMessageDialog(null, "OS removida com sucesso!");
+                        clean();
+                        txtOSearchNome.setEnabled(true);
+                        txtOSearchNome.setText(null);
+                        tblOSCli.setModel(new DefaultTableModel());
+                        btnOSCadastrar.setEnabled(true);
+                    }
+
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                    clean();
+                    tblOSCli.setModel(new DefaultTableModel());
+                }
+
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Busque uma OS para ser removida!");
+        }
     }//GEN-LAST:event_btnOSDeletarActionPerformed
 
     private void btnOSCadastrarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnOSCadastrarMouseEntered
@@ -754,8 +603,24 @@ public class TelaOS extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnOSCadastrarMouseEntered
 
     private void btnOSImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOSImprimirActionPerformed
-        // TODO add your handling code here:
-        imprimirOS();
+        if(!txtOSId.getText().isEmpty()){
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão desta OS?", "Atenção", JOptionPane.YES_NO_OPTION );
+        
+        if(confirma == JOptionPane.YES_OPTION){
+            try {
+                OsDao osDao = DaoFactory.createOsDao();
+                Os to_print = new Os(Integer.parseInt(txtOSId.getText()),txtOSData.getText(),tipo, cboOSStatus.getSelectedItem().toString(), txtOSEquip.getText(), txtOSDef.getText(), txtOSServ.getText(), txtOSTecn.getText(), Double.parseDouble(txtOSValor.getText().replace(",", ".")), Integer.parseInt(txtOSCliID.getText()));
+                osDao.imprimir(to_print);
+             
+            } catch(Exception e){
+                JOptionPane.showMessageDialog(null, e);
+            }
+             
+        }
+       }else{
+            JOptionPane.showMessageDialog(null, "Nenhuma OS foi selecionada para impressão! \n Busque uma OS para ser impressa.");  // FIZ A VERIFICAÇÃO EXPLÍCITA
+            // POIS NÃO ESTAVA PEGANDO A DADOSINVALIDOSEXCEPTION();
+        }
     }//GEN-LAST:event_btnOSImprimirActionPerformed
 
 

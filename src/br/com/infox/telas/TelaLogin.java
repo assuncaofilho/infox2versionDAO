@@ -1,20 +1,12 @@
 package br.com.infox.telas;
 
 import br.com.infox.connection.ConexaoUtil;
-import br.com.infox.dao.AcessoAoBancoException;
 import br.com.infox.dao.DaoFactory;
 import br.com.infox.dao.UsuarioDao;
 import br.com.infox.entity.Usuario;
-import java.awt.AWTException;
 import java.awt.Color;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import sun.security.util.SecurityConstants;
 
 public class TelaLogin extends javax.swing.JFrame {
 

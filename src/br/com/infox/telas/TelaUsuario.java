@@ -5,21 +5,9 @@
  */
 package br.com.infox.telas;
 
-import java.sql.PreparedStatement;
-import br.com.infox.connection.ConexaoUtil;
-import br.com.infox.dao.ChaveVioladaException;
-import br.com.infox.dao.DadosInvalidosException;
 import br.com.infox.dao.DaoFactory;
-import br.com.infox.dao.FalhaNaOperacaoException;
-import br.com.infox.dao.FormatoInvalidoDeDadosException;
 import br.com.infox.dao.UsuarioDao;
-import br.com.infox.dao.UsuarioNaoEncontradoException;
 import br.com.infox.entity.Usuario;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import br.com.infox.telas.TelaPrincipal;
 
