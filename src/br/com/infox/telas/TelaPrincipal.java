@@ -17,8 +17,7 @@ import java.sql.*;
 
 public class TelaPrincipal extends javax.swing.JFrame {
     
-    Connection conexao = null;
-    public static String perfilLogado;
+    public static String perfilLogado = null;
  
 
     /**
@@ -29,7 +28,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         perfilLogado = perfil;
         JOptionPane.showMessageDialog(null, perfilLogado);
         initComponents();
-        conexao = ConexaoUtil.getConnection();
+        
   
         
     }
