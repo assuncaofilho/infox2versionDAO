@@ -1,5 +1,5 @@
 
-package br.com.infox.dao;
+package br.com.infox.domain;
 
 
 public class FormatoInvalidoDeDadosException extends RuntimeException {

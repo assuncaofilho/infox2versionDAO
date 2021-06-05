@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package br.com.infox.dao;
+  // As implementações das interfaces DAO (neste caso as classes DAOJdbc) correspondem ao Control do modelo MVC?
+package br.com.infox.domain;
 
 import br.com.infox.connection.ConexaoUtil;
-import br.com.infox.entity.Os;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,16 +12,13 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
 
-/**
- *
- * @author usuario
- */
+
 class OsDaoJdbc implements OsDao {
     
     private Connection conexao = ConexaoUtil.getConnection();
     
     private boolean isValido(Os o){
-        return(!(Integer.toString(o.getId_cliente()).isEmpty()) &&!o.getEquipamento().isEmpty() && !o.getDefeito().isEmpty() && !o.getServico().isEmpty() && !(Double.toString(o.getValor()).isEmpty()));
+        return(!(Integer.toString(o.getIdcli()).isEmpty()) &&!o.getEquipamento().isEmpty() && !o.getDefeito().isEmpty() && !o.getServico().isEmpty() && !(Double.toString(o.getValor()).isEmpty()));
     }
 
     private boolean isInteiro(String s) {
@@ -58,7 +50,7 @@ class OsDaoJdbc implements OsDao {
                 pst.setString(5, o.getServico());
                 pst.setString(6, o.getTecnico());
                 pst.setString(7, Double.toString(o.getValor()));
-                pst.setString(8, Integer.toString(o.getId_cliente()));
+                pst.setString(8, Integer.toString(o.getIdcli()));
 
                 pst.executeUpdate(); 
                 
@@ -127,7 +119,7 @@ class OsDaoJdbc implements OsDao {
                 pst.setString(5, o.getServico());
                 pst.setString(6, o.getTecnico());
                 pst.setString(7, Double.toString(o.getValor()));
-                pst.setString(8, Integer.toString(o.getId_os()));
+                pst.setString(8, Integer.toString(o.getId()));
 
                 int verificador = pst.executeUpdate();
                 if (verificador > 0) { // se a execução for exitosa de uma DML (insert, upedate, delete or drop)
@@ -156,7 +148,7 @@ class OsDaoJdbc implements OsDao {
             if(isValido(o)){
             String remover = "delete from tbos where os=?";
             pst = conexao.prepareStatement(remover);
-            pst.setString(1, Integer.toString(o.getId_os()));
+            pst.setString(1, Integer.toString(o.getId()));
             int verificador = pst.executeUpdate(); // retorna 1 para DML (insert, update, delete, drop);
             return verificador;
                 
@@ -170,24 +162,7 @@ class OsDaoJdbc implements OsDao {
         }
     }
 
-    @Override
-    public void imprimir(Os o) {
-                
-            // imprimindo a OS com o JaperReport
-            try {
-                // usando a classe HashMap para criar um filtro 
-                HashMap filtro = new HashMap();
-                filtro.put("os",o.getId_os()); // "os" é o parâmetro criado no report OS; 
-                JasperPrint print = JasperFillManager.fillReport("OS.jasper",filtro, conexao ); // filtro é o parâmetro obtido para gerar o relatório;
-                JasperViewer.viewReport(print, false);
-                
-            } catch(java.lang.NumberFormatException n){
-                throw new DadosInvalidosException("formato inválido. Selecione uma OS para impressão");
-            } catch(Exception e){
-                JOptionPane.showMessageDialog(null, e);
-            }
-             
-        }
+
     }
 
 

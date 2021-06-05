@@ -5,9 +5,9 @@
  */
 package br.com.infox.telas;
 
-import br.com.infox.dao.DaoFactory;
-import br.com.infox.dao.UsuarioDao;
-import br.com.infox.entity.Usuario;
+import br.com.infox.domain.DaoFactory;
+import br.com.infox.domain.UsuarioDao;
+import br.com.infox.domain.Usuario;
 import javax.swing.JOptionPane;
 import br.com.infox.telas.TelaPrincipal;
 
@@ -270,8 +270,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             }
            
         } catch (Exception e){
-            JOptionPane.showMessageDialog(null, e);
-            
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Validação", JOptionPane.ERROR_MESSAGE );
         }     
         
     }//GEN-LAST:event_btnUsuCreateActionPerformed
@@ -283,24 +282,15 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         try {
             Usuario buscado = usuarioDao.pesquisar(Integer.parseInt(id));
 
-            // setando os campos do formulário a partir do usuário buscado;
-            // caso o gerente queira consultar o perfil do administrador o programa deverá barrar!
-            
-            if (buscado.getPerfil().equals("admin") && (TelaPrincipal.perfilLogado.equals("gerente"))) {
-                JOptionPane.showMessageDialog(null, "Você não possui permissão para consultar este usuário.");
-            } else {
-                txtUsuID.setText(Integer.toString(buscado.getId()));
-                txtUsuNome.setText(buscado.getNome());
-                txtUsuFone.setText(buscado.getFone());
-                txtUsuLogin.setText(buscado.getLogin());
-                txtUsuSenha.setText(buscado.getSenha());
-                cboUsuPerfil.setSelectedItem(buscado.getPerfil());
-
-            }
-
+            txtUsuID.setText(Integer.toString(buscado.getId()));
+            txtUsuNome.setText(buscado.getNome());
+            txtUsuFone.setText(buscado.getFone());
+            txtUsuLogin.setText(buscado.getLogin());
+            txtUsuSenha.setText(buscado.getSenha());
+            cboUsuPerfil.setSelectedItem(buscado.getPerfil());
         }catch(Exception e){
-            JOptionPane.showMessageDialog(null, e); // CORRIGIR POIS NÃO ESTÁ CAPTURANDO A EXCEÇÃO FORMATO INVALIDO 
-            //DE DADOS EXCEPTION
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE); 
+  
         }
     }//GEN-LAST:event_btnUsuReadActionPerformed
 
@@ -312,17 +302,20 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     private void btnUsuUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuUpdateActionPerformed
         
         UsuarioDao usuarioDao = DaoFactory.createUsuarioDao();
+        if (!txtUsuID.getText().isEmpty()) {
         Usuario to_edit = new Usuario(Integer.parseInt(txtUsuID.getText()), txtUsuNome.getText(), txtUsuFone.getText(), txtUsuLogin.getText(), txtUsuSenha.getText(), cboUsuPerfil.getSelectedItem().toString());
         try {
             int editado = usuarioDao.editar(to_edit);
             if (editado > 0) {
-                JOptionPane.showMessageDialog(null, "Usuário editado com sucesso!");
+                JOptionPane.showMessageDialog(this, "Usuário editado com sucesso!");
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
         
-
+        }else{
+            JOptionPane.showMessageDialog(this, "Selecione um usuário para ser editado!");
+        }
     }//GEN-LAST:event_btnUsuUpdateActionPerformed
 
     private void btnUsuDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuDeleteActionPerformed
@@ -340,7 +333,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
                     }
 
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, e);
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 }
 
             }

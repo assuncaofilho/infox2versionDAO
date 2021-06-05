@@ -1,5 +1,5 @@
 
-package br.com.infox.entity;
+package br.com.infox.domain;
 
 public class Usuario {
     
@@ -10,7 +10,8 @@ public class Usuario {
     private String senha;
     private String perfil;
     
-    // OBS: não é necessário o Id_usuario() pois é auto_increment;
+    private static Usuario usuarioLogado;
+    
 
     public Usuario(String nome, String fone, String login, String senha, String perfil) {
         
@@ -29,9 +30,6 @@ public class Usuario {
         this.senha = senha;
         this.perfil = perfil;
     }
-    
-    
-    
     
 
     public int getId() {
@@ -77,7 +75,13 @@ public class Usuario {
     public void setPerfil(String perfil) {
         this.perfil = perfil;
     }
-    
-    
+
+    static Usuario getUsuarioLogado() {
+        return usuarioLogado;
+    }
+
+    static void setUsuarioLogado(Usuario usuarioLogado) {
+        Usuario.usuarioLogado = usuarioLogado;
+    }
 
 }

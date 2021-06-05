@@ -1,4 +1,4 @@
-package br.com.infox.entity;
+package br.com.infox.domain;
 
 public class Cliente {
 

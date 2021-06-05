@@ -1,9 +1,9 @@
 
-package br.com.infox.entity;
+package br.com.infox.domain;
 
 public class Os {
     
-    private int id_os;
+    private int id;
     private String data_os;
     private String tipo;
     private String situacao;
@@ -12,10 +12,10 @@ public class Os {
     private String servico;
     private String tecnico;
     private double valor;
-    private int id_cliente;
+    private int idcli;
 
-    public Os(int id_os, String data_os, String tipo, String situacao, String equipamento, String defeito, String servico, String tecnico, double valor, int id_cliente) {
-        this.id_os = id_os;
+    public Os(int id, String data_os, String tipo, String situacao, String equipamento, String defeito, String servico, String tecnico, double valor, int idcli) {
+        this.id = id;
         this.data_os = data_os;
         this.tipo = tipo;
         this.situacao = situacao;
@@ -24,10 +24,10 @@ public class Os {
         this.servico = servico;
         this.tecnico = tecnico;
         this.valor = valor;
-        this.id_cliente = id_cliente;
+        this.idcli = idcli;
     }
-
-    public Os(String tipo, String situacao, String equipamento, String defeito, String servico, String tecnico, double valor, int id_cliente) {
+    
+    public Os(String tipo, String situacao, String equipamento, String defeito, String servico, String tecnico, double valor, int idcli) {
         this.tipo = tipo;
         this.situacao = situacao;
         this.equipamento = equipamento;
@@ -35,17 +35,19 @@ public class Os {
         this.servico = servico;
         this.tecnico = tecnico;
         this.valor = valor;
-        this.id_cliente = id_cliente;
+        this.idcli = idcli;
     }
+    
+    
 
     @Override
     public String toString() {
-        return "Os{" + "id_os=" + id_os + ", data_os=" + data_os + ", tipo=" + tipo + ", situacao=" + situacao + ", equipamento=" + equipamento + ", defeito=" + defeito + ", servico=" + servico + ", tecnico=" + tecnico + ", valor=" + valor + ", id_cliente=" + id_cliente + '}';
+        return "Os{" + "id_os=" + id + ", data_os=" + data_os + ", tipo=" + tipo + ", situacao=" + situacao + ", equipamento=" + equipamento + ", defeito=" + defeito + ", servico=" + servico + ", tecnico=" + tecnico + ", valor=" + valor + ", id_cliente=" + idcli + '}';
     }
     
-
-    public int getId_os() {
-        return id_os;
+    
+    public int getId() {
+        return id;
     }
 
     public String getData_os() {
@@ -108,16 +110,12 @@ public class Os {
         this.valor = valor;
     }
 
-    public int getId_cliente() {
-        return id_cliente;
+    public int getIdcli() {
+        return idcli;
     }
 
-    public void setId_cliente(int id_cliente) {
-        this.id_cliente = id_cliente;
-    }
-    
-    
-    
-    
+    public void setIdcli(int idcli) {
+        this.idcli = idcli;
+    }   
     
 }

@@ -1,39 +1,34 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package br.com.infox.telas;
 
-import java.sql.*;
 import br.com.infox.connection.ConexaoUtil;
-import br.com.infox.dao.ClienteDao;
-import br.com.infox.dao.DaoFactory;
-import br.com.infox.dao.OsDao;
-import br.com.infox.entity.Cliente;
-import br.com.infox.entity.Os;
+import br.com.infox.domain.ClienteDao;
+import br.com.infox.domain.DaoFactory;
+import br.com.infox.domain.OsDao;
+import br.com.infox.domain.Cliente;
+import br.com.infox.domain.DadosInvalidosException;
+import br.com.infox.domain.Os;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
-/**
- *
- * @author usuario
- */
+
 public class TelaOS extends javax.swing.JInternalFrame {
-
-    Connection conexao = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
+    
+   // private Connection conexao = ConexaoUtil.getConnection();
     
     private String tipo;
 
-    /**
-     * Creates new form TelaOS
-     */
     public TelaOS() {
         initComponents();
-        conexao = ConexaoUtil.getConnection();
+        
     }
     
     private void clean() {
@@ -54,6 +49,14 @@ public class TelaOS extends javax.swing.JInternalFrame {
         int setar = tblOSCli.getSelectedRow();
         txtOSCliID.setText(tblOSCli.getValueAt(setar, 0).toString());
     }
+    
+     
+    public void imprimir(Os o) {
+                
+            // imprimindo a OS com o JaperReport
+           
+             
+        }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -498,7 +501,7 @@ public class TelaOS extends javax.swing.JInternalFrame {
                 Os encontrada = osDao.pesquisar(Integer.parseInt(id));
 
                 if (encontrada != null) {
-                    txtOSId.setText(Integer.toString(encontrada.getId_os()));
+                    txtOSId.setText(Integer.toString(encontrada.getId()));
                     txtOSData.setText(encontrada.getData_os());
                     if (encontrada.getTipo().equals("Orçamento")) {
                         tipo = "Orçamento";
@@ -513,7 +516,7 @@ public class TelaOS extends javax.swing.JInternalFrame {
                     txtOSServ.setText(encontrada.getServico());
                     txtOSTecn.setText(encontrada.getTecnico());
                     txtOSValor.setText(Double.toString(encontrada.getValor()).replace(".", ","));
-                    txtOSCliID.setText(Integer.toString(encontrada.getId_cliente()));
+                    txtOSCliID.setText(Integer.toString(encontrada.getIdcli()));
                     // prevenindo problemas
                     btnOSCadastrar.setEnabled(false);
                     txtOSearchNome.setEnabled(false);
@@ -525,7 +528,7 @@ public class TelaOS extends javax.swing.JInternalFrame {
                     
                     //Preenchendo a tabela com os dados do cliente associado à OS encontrada;
                     ClienteDao clienteDao = DaoFactory.createClienteDao();
-                    Cliente vinculadoOS = clienteDao.pesquisarById(encontrada.getId_cliente());
+                    Cliente vinculadoOS = clienteDao.pesquisarById(encontrada.getIdcli());
 
                     Object[] ob = new Object[3];
                     ob[0] = vinculadoOS.getNome();
@@ -610,10 +613,26 @@ public class TelaOS extends javax.swing.JInternalFrame {
             try {
                 OsDao osDao = DaoFactory.createOsDao();
                 Os to_print = new Os(Integer.parseInt(txtOSId.getText()),txtOSData.getText(),tipo, cboOSStatus.getSelectedItem().toString(), txtOSEquip.getText(), txtOSDef.getText(), txtOSServ.getText(), txtOSTecn.getText(), Double.parseDouble(txtOSValor.getText().replace(",", ".")), Integer.parseInt(txtOSCliID.getText()));
-                osDao.imprimir(to_print);
+                List<Os> o = new ArrayList();
+                o.add(to_print);
+                 try {
+                // usando a classe HashMap para criar um filtro
+                JRBeanCollectionDataSource itensJRBean = new JRBeanCollectionDataSource(o);
+                //HashMap filtro = new HashMap();
+                //filtro.put("os",to_print.getOs()); // "os" é o parâmetro criado no report OS; 
+                JasperPrint print = JasperFillManager.fillReport("C:\\reports\\OS.jasper",null,itensJRBean); 
+                JasperViewer.viewReport(print, false);
+                
+            } catch(java.lang.NumberFormatException n){
+                throw new DadosInvalidosException("formato inválido. Selecione uma OS para impressão");
+            } catch(Exception e){
+                JOptionPane.showMessageDialog(null, e);
+                e.printStackTrace();
+            }
              
             } catch(Exception e){
                 JOptionPane.showMessageDialog(null, e);
+                e.printStackTrace();
             }
              
         }
