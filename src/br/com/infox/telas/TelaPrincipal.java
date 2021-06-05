@@ -6,30 +6,40 @@
 package br.com.infox.telas;
 
 import br.com.infox.connection.ConexaoUtil;
-import br.com.infox.dao.DaoFactory;
-import br.com.infox.dao.UsuarioDao;
+import br.com.infox.domain.DaoFactory;
+import br.com.infox.domain.UsuarioDao;
+import br.com.infox.domain.Cliente;
+import br.com.infox.domain.ClienteDao;
+import br.com.infox.domain.Os;
+import java.sql.Connection;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JOptionPane;
-import br.com.infox.telas.TelaLogin;
-import java.sql.*; 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 
 public class TelaPrincipal extends javax.swing.JFrame {
     
-    public static String perfilLogado = null;
+    public UsuarioDao usuarioDao = DaoFactory.createUsuarioDao();
+    public ClienteDao clienteDao = DaoFactory.createClienteDao();
+    
+    private Connection conexao = ConexaoUtil.getConnection();
  
 
     /**
      * Creates new form TelaPrincipal
      */
-    public TelaPrincipal(String perfil) {
-        
-        perfilLogado = perfil;
-        JOptionPane.showMessageDialog(null, perfilLogado);
+    public TelaPrincipal() {
+        JOptionPane.showMessageDialog(null, usuarioDao.obterUsuarioLogado().getPerfil());
         initComponents();
-        
-  
         
     }
     
@@ -249,6 +259,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         int logoff = JOptionPane.showConfirmDialog(null, "Deseja realizar o logoff?", "Atenção", JOptionPane.YES_NO_OPTION);
         if (logoff == JOptionPane.YES_OPTION) {
             this.dispose();
+            usuarioDao.deslogar();
             TelaLogin tLog = new TelaLogin();
             tLog.setVisible(true);
         }
@@ -269,13 +280,32 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_menuCadOSActionPerformed
 
     private void menuRelCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRelCliActionPerformed
-        // gerando um relatório de clientes
+        //ERRO NA GERAÇÃO DE RELATÓRIO DE CLIENTE
+        //net.sf.jasperreports.engine.JRException: Error retrieving field value from bean : 
+        //Caused by: java.lang.NoSuchMethodException: Unknown property '' on class 'class br.com.infox.domain.Os'
+        //ERRO NA GERAÇÃO DE RELATÓRIO DE CLIENTE
+        //net.sf.jasperreports.engine.JRException: Error retrieving field value from bean : 
+        //Caused by: java.lang.NoSuchMethodException: Unknown property '' on class 'class br.com.infox.domain.Os'
+        
         int confirma = JOptionPane.showConfirmDialog(null, "Confirma a emissão deste relatório?", "Atenção", JOptionPane.YES_NO_OPTION );
         
         if(confirma == JOptionPane.YES_OPTION){
             // imprimindo o relatório com o JaperReport
-            UsuarioDao usuarioDao = DaoFactory.createUsuarioDao();
-            usuarioDao.imprimirRelatorioClientes();
+            
+            List<Cliente> listagemCli = usuarioDao.listarClientes();
+            
+            try {
+                
+                JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(listagemCli);
+                //Map<String, Object> parametros = new HashMap<String, Object>();
+                JasperPrint print = JasperFillManager.fillReport("C:\\reports\\Clientes.jasper", null, itemsJRBean);
+                JasperViewer.viewReport(print, false);
+                
+                //JasperFillManager.fillReportToFile("C:\\reports\\Clientes.jasper", null, itemsJRBean);
+                //JasperExportManager.exportReportToPdfFile("C:\\reports\\Clientes.jrprint");
+            } catch (JRException ex) {
+                ex.printStackTrace();
+            }
              
         }
         
@@ -286,12 +316,23 @@ public class TelaPrincipal extends javax.swing.JFrame {
         int confirma = JOptionPane.showConfirmDialog(null, "Confirma a emissão deste relatório?", "Atenção", JOptionPane.YES_NO_OPTION );
         
         if(confirma == JOptionPane.YES_OPTION){
-            // imprimindo o relatório com o JaperReport
+
             
-            UsuarioDao usuarioDao = DaoFactory.createUsuarioDao();
-            usuarioDao.imprimirRelatorioServicos();
+            List<Os> listagemOs = usuarioDao.listarServicos();
+            System.out.println(listagemOs.size());
             
-            // chamar o imprimirRelatorioServicos();
+            try {
+                
+                //JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(listagemOs);
+                
+                JasperPrint print = JasperFillManager.fillReport("C:\\reports\\Servicos.jasper", null, conexao);
+                JasperViewer.viewReport(print, false);
+                
+                //JasperFillManager.fillReportToFile("C:\\reports\\OS.jasper", null, itemsJRBean);
+                //JasperExportManager.exportReportToPdfFile("C:\\reports\\OS.jrprint");
+            } catch (JRException ex) {
+                ex.printStackTrace();
+            }
              
         }
     }//GEN-LAST:event_menuRelServActionPerformed
@@ -326,7 +367,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TelaPrincipal(perfilLogado).setVisible(true);
+                new TelaPrincipal().setVisible(true);
             }
         });
     }

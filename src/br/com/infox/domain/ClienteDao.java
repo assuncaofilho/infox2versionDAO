@@ -1,8 +1,6 @@
 
-package br.com.infox.dao;
+package br.com.infox.domain;
 
-import br.com.infox.entity.Cliente;
-import java.sql.ResultSet;
 import java.util.List;
 
 public interface ClienteDao {

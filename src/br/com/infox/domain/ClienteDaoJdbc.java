@@ -1,8 +1,8 @@
 
-package br.com.infox.dao;
+// As implementações das interfaces DAO (neste caso as classes DAOJdbc) correspondem ao Control do modelo MVC?
+package br.com.infox.domain;
 
 import br.com.infox.connection.ConexaoUtil;
-import br.com.infox.entity.Cliente;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -115,8 +115,8 @@ class ClienteDaoJdbc implements ClienteDao {
         int editado = 0;
 
         String editar = "update tbclientes set nomecli =?, endcli=?, telefonecli=?, emailcli=? where idcli=?";
-        try {
-            if (isValido(c)) {
+        if (isValido(c)) {
+            try {
 
                 pst = conexao.prepareStatement(editar);
                 pst.setString(1, c.getNome());
@@ -130,15 +130,15 @@ class ClienteDaoJdbc implements ClienteDao {
                     editado = verificador;
 
                 }
-                return editado;
-
-            } else {
-                throw new DadosInvalidosException("Preencha todos os campos obrigatórios para editar este cliente!");
+            } catch (SQLException e) {
+                throw new FalhaNaOperacaoException("Falha ao editar o cliente. Verifique a comunicação com o Banco de Dados.");
             }
-        } catch (SQLException e) {
-            throw new AcessoAoBancoException("Falha ao editar o cliente. Verifique a comunicação com o Banco de Dados.");
-        }
 
+        } else {
+
+            throw new DadosInvalidosException("Preencha todos os campos obrigatórios para editar este cliente!");
+        }
+        return editado;
     }
 
     @Override

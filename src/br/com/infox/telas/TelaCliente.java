@@ -1,21 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package br.com.infox.telas;
 
-import br.com.infox.dao.ClienteDao;
-import br.com.infox.dao.DaoFactory;
-import br.com.infox.entity.Cliente;
+import br.com.infox.domain.ClienteDao;
+import br.com.infox.domain.DaoFactory;
+import br.com.infox.domain.Cliente;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author usuario
- */
 public class TelaCliente extends javax.swing.JInternalFrame {
 
 
@@ -308,11 +300,11 @@ public class TelaCliente extends javax.swing.JInternalFrame {
             int id = clienteDao.cadastrar(add);
             if (id > 0) {
                 txtCliID.setText(Integer.toString(id));
-                JOptionPane.showMessageDialog(null, "Cliente cadastrado com sucesso");
+                JOptionPane.showMessageDialog(this, "Cliente cadastrado com sucesso");
 
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
 
     }//GEN-LAST:event_btnCliCreateActionPerformed
@@ -350,7 +342,7 @@ public class TelaCliente extends javax.swing.JInternalFrame {
                 model.addRow(ob);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_txtCliSearchKeyReleased
 
@@ -360,6 +352,7 @@ public class TelaCliente extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tblClientesMouseClicked
 
     private void btnCliUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCliUpdateActionPerformed
+        if(!txtCliID.getText().isEmpty()){
         ClienteDao clienteDao = DaoFactory.createClienteDao();
         Cliente to_edit = new Cliente(Integer.parseInt(txtCliID.getText()), txtCliNome.getText(), txtCliEnd.getText(), txtCliFone.getText(), txtCliEmail.getText());
         try {
@@ -371,7 +364,10 @@ public class TelaCliente extends javax.swing.JInternalFrame {
                 
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+       }else{
+            JOptionPane.showMessageDialog(this, "Selecione um cliente para editar!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCliUpdateActionPerformed
 
@@ -391,12 +387,12 @@ public class TelaCliente extends javax.swing.JInternalFrame {
                     }
 
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, e);
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 }
 
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Selecione um usuário para ser removido!");
+            JOptionPane.showMessageDialog(this, "Selecione um cliente para ser removido!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCliDeleteActionPerformed
 

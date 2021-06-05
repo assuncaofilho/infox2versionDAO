@@ -1,16 +1,15 @@
-package br.com.infox.dao;
+// As implementações das interfaces DAO (neste caso as classes DAOJdbc) correspondem ao Control do modelo MVC?
+package br.com.infox.domain;
 
 import br.com.infox.connection.ConexaoUtil;
-import br.com.infox.entity.Cliente;
-import br.com.infox.entity.Os;
-import br.com.infox.entity.Usuario;
-import br.com.infox.telas.TelaLogin;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
@@ -19,25 +18,23 @@ class UsuarioDaoJdbc implements UsuarioDao {
 
     private Connection conexao = ConexaoUtil.getConnection();
     
-
     
 
-
-    public Usuario logar(String usuario, String senha) throws AcessoAoBancoException {
+    public Usuario logar(String login, String senha) throws AcessoAoBancoException {
         PreparedStatement pst = null;
         ResultSet rs = null;
         String sql = "select * from tbusuarios where login =?  and senha = ?";
 
         try {
             pst = conexao.prepareStatement(sql);
-            pst.setString(1, usuario);
+            pst.setString(1, login);
             pst.setString(2, senha);
             rs = pst.executeQuery();
 
             if (rs.next()) {
-
-                return new Usuario(rs.getString("usuario"), rs.getString("telefone"), rs.getString("login"), rs.getString("senha"), rs.getString("perfil"));
-                // precisei de uma variável auxiliar pois não estava permitindo retornar o u diretamente;
+                Usuario usuarioLogado = new Usuario(rs.getString("nome"), rs.getString("telefone"), rs.getString("login"), rs.getString("senha"), rs.getString("perfil"));
+                Usuario.setUsuarioLogado(usuarioLogado); // guarda na variável estática o usuario logado;
+                return usuarioLogado;
             }
             
             throw new AcessoAoBancoException("Falha ao logar! Verifique senha e/ou usuário ou se o servidor está disponível!"); 
@@ -47,20 +44,32 @@ class UsuarioDaoJdbc implements UsuarioDao {
             
         }
     }
-    
+
+    @Override
+    public void deslogar() {
+        Usuario.setUsuarioLogado(null);
+    }
+
+    @Override
+    public boolean isLogado() {
+        return Usuario.getUsuarioLogado() != null;
+    }
     
     private boolean isValido(Usuario u) {
         return (!u.getNome().isEmpty() && !u.getLogin().isEmpty() && !u.getSenha().isEmpty());
     }
-    
-        
+
+    @Override
+    public Usuario obterUsuarioLogado() {
+        return Usuario.getUsuarioLogado();
+    }
 
     @Override
     public int cadastrar(Usuario u) { // RETORNA O ID DO USUÁRIO
         PreparedStatement pst = null;
         ResultSet rs = null;
 
-        String adicionar = "insert into tbusuarios (iduser, usuario, telefone, login, senha, perfil) "
+        String adicionar = "insert into tbusuarios (iduser, nome, telefone, login, senha, perfil) "
         + "values (default, ?, ?, ?, ?, ?)";        
 
         try {
@@ -96,7 +105,7 @@ class UsuarioDaoJdbc implements UsuarioDao {
         ResultSet rs = null;
         
         String pesquisar = "select * from tbusuarios where iduser = ?";
-        Usuario encontrado = null;
+        
         
 
         try {
@@ -107,7 +116,11 @@ class UsuarioDaoJdbc implements UsuarioDao {
             if (rs.next()) {
 
                 Usuario u = new Usuario(id,rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6));
-                encontrado = u;
+                Usuario uLogado = obterUsuarioLogado();
+                if (u.getPerfil().equals("admin") && !uLogado.getPerfil().equals("admin")) {
+                    throw new PermissaoAcessoException("Você não possui permissão para consultar este usuário.");
+                }
+                return u;
 
             } else {
                 
@@ -121,8 +134,6 @@ class UsuarioDaoJdbc implements UsuarioDao {
         } catch (java.lang.NumberFormatException f){
             throw new FormatoInvalidoDeDadosException("informe um número inteiro para pesquisar.");
         }
-
-        return encontrado;
     }
 
     @Override
@@ -132,7 +143,7 @@ class UsuarioDaoJdbc implements UsuarioDao {
         ResultSet rs = null;
         int editado = 0;
 
-        String editar = "update tbusuarios set usuario =?, telefone=?, login=?, senha=?, perfil=? where iduser=?";
+        String editar = "update tbusuarios set nome =?, telefone=?, login=?, senha=?, perfil=? where iduser=?";
         try {
             if (isValido(u)) {
 
@@ -187,27 +198,45 @@ class UsuarioDaoJdbc implements UsuarioDao {
     }
 
     @Override
-    public void imprimirRelatorioClientes() {
+    public List<Cliente> listarClientes() {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        List<Cliente> clientes = new ArrayList();
+        String buscaCli = "select * from tbclientes ";
         try {
-                
-                 JasperPrint print = JasperFillManager.fillReport("Clientes.jasper",null, conexao );
-                 JasperViewer.viewReport(print, false);
-                
-            } catch (Exception e) {
-                throw new RuntimeException();
+            pst = conexao.prepareStatement(buscaCli);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+
+                Cliente c = new Cliente(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
+                clientes.add(c);
             }
+            return clientes;
+        } catch (SQLException ex) {
+            throw new FalhaNaOperacaoException("não foi possível listar os clientes. Falha na consulta!");
+        }
+
     }
 
     @Override
-    public void imprimirRelatorioServicos() {
+    public List<Os> listarServicos() {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        List<Os> lista_os = new ArrayList();
+        String buscaOs = "SELECT * FROM tbos where tipo = 'OS'";
         try {
-                
-                 JasperPrint print = JasperFillManager.fillReport("Servicos.jasper",null, conexao );
-                 JasperViewer.viewReport(print, false);
-                
-            } catch (Exception e) {
-                throw new RuntimeException();
+            pst = conexao.prepareStatement(buscaOs);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+
+                Os o = new Os(rs.getInt(1), rs.getString(2), rs.getString(3),rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getDouble(9), rs.getInt(10));
+                lista_os.add(o);
             }
+            return lista_os;
+        } catch (SQLException ex) {
+            throw new FalhaNaOperacaoException("não foi possível listar os serviços. Falha na consulta!");
+        }
+
     }
 
 }

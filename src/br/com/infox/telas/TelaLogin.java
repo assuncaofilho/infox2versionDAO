@@ -1,9 +1,9 @@
 package br.com.infox.telas;
 
 import br.com.infox.connection.ConexaoUtil;
-import br.com.infox.dao.DaoFactory;
-import br.com.infox.dao.UsuarioDao;
-import br.com.infox.entity.Usuario;
+import br.com.infox.domain.DaoFactory;
+import br.com.infox.domain.UsuarioDao;
+import br.com.infox.domain.Usuario;
 import java.awt.Color;
 import java.sql.Connection;
 import javax.swing.JOptionPane;
@@ -11,8 +11,6 @@ import javax.swing.JOptionPane;
 public class TelaLogin extends javax.swing.JFrame {
 
     Connection conexao = null;
-    private String perfil_logado = null;
-    
 
     public TelaLogin() {
         initComponents();
@@ -119,10 +117,8 @@ public class TelaLogin extends javax.swing.JFrame {
             UsuarioDao usuarioDao = DaoFactory.createUsuarioDao(); // assim o programa não conhece a implementação apenas a interface;
             Usuario u = usuarioDao.logar(txtLogin.getText(), txtSenha.getText());
             if (u != null) {
-                perfil_logado = u.getPerfil();
-
                 if (u.getPerfil().equals("admin")) {
-                    TelaPrincipal tp = new TelaPrincipal(perfil_logado);
+                    TelaPrincipal tp = new TelaPrincipal();
                     tp.setVisible(true);
                     //tp.setPerfilLogado(perfil_logado);
                     this.dispose(); // fechar o frame do objeto que chamou logar();
@@ -133,7 +129,7 @@ public class TelaLogin extends javax.swing.JFrame {
 
                     // verifica se quem está logando é o gerente e habilita o cadastro de novos usuários(técnicos);
                 } else if (u.getPerfil().equals("gerente")) {
-                    TelaPrincipal tp = new TelaPrincipal(perfil_logado);
+                    TelaPrincipal tp = new TelaPrincipal();
                     tp.setVisible(true);
                     //tp.setPerfilLogado(perfil_logado);
                     this.dispose(); // fechar o frame do objeto que chamou logar();
@@ -142,7 +138,7 @@ public class TelaLogin extends javax.swing.JFrame {
                     TelaPrincipal.lblUsuario.setText(u.getNome());
 
                 } else if (u.getPerfil().equals("tecnico")) {
-                    TelaPrincipal tp = new TelaPrincipal(perfil_logado);
+                    TelaPrincipal tp = new TelaPrincipal();
                     tp.setVisible(true);
                     //tp.setPerfilLogado(perfil_logado);
                     this.dispose(); // fechar o frame do objeto que chamou logar();
@@ -154,6 +150,7 @@ public class TelaLogin extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            e.printStackTrace();
 
         }
 
